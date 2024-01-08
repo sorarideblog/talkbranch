@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  uniqueName  String    @unique
+  displayName String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  talkThemesAsCreator   TalkTheme[]          @relation("TalkThemeCreator")
+  talkThemesAsOwner     TalkTheme[]          @relation("TalkThemeOwner")
+  remarksAsCreator      Remark[]             @relation("RemarkCreator")
+  talkThemesAsmoderator TalkThemeModerator[] @relation("UserAsModerator")
+  RemarkReaction        RemarkReaction[]     @relation("Reactor")
+  BlockerUser           Block[]              @relation("BlockerUser")
+  TargetUser            Block[]              @relation("TargetUser")
+}
+
+model TalkTheme {
+  id                         Int       @id @default(autoincrement())
+  parentThemeId              Int?
+  title                      String
+  talkThemeCreator           User      @relation("TalkThemeCreator", fields: [createdByUserId], references: [id])
+  createdByUserId            Int
+  talkThemeOwner             User      @relation("TalkThemeOwner", fields: [ownerId], references: [id])
+  ownerId                    Int
+  isPublic                   Boolean
+  mode                       String
+  allowRemarkAfterConclusion Boolean
+  conslusionRemark           Remark?   @relation("ConslusionRemark", fields: [conslusionRemarkId], references: [id])
+  conslusionRemarkId         Int?
+  concluedeAt                DateTime?
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+  deletedAt                  DateTime?
+
+  remarks    Remark[]             @relation("TalkThemeOfRemark")
+  moderators TalkThemeModerator[] @relation("TalkThemeModerator")
+}
+
+model Remark {
+  id              Int       @id @default(autoincrement())
+  talkTheme       TalkTheme @relation("TalkThemeOfRemark", fields: [themeId], references: [id])
+  themeId         Int
+  parentId        Int?
+  mergedToId      Int?
+  quotedRemarkId  Int?
+  createdBy       User      @relation("RemarkCreator", fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  TalkThemeAsConslusionRemark TalkTheme[]         @relation("ConslusionRemark")
+  RemarkBodyHistory           RemarkBodyHistory[] @relation("RemarkBodyHistory")
+  reactions                   RemarkReaction[]    @relation("RemarkReaction")
+}
+
+model TalkThemeModerator {
+  theme     TalkTheme @relation("TalkThemeModerator", fields: [themeId], references: [id])
+  themeId   Int
+  user      User      @relation("UserAsModerator", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime  @default(now())
+
+  @@id([themeId, userId])
+}
+
+model RemarkBodyHistory {
+  remark    Remark   @relation("RemarkBodyHistory", fields: [remarkId], references: [id])
+  remarkId  Int
+  version   Int
+  type      String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@id([remarkId, version])
+}
+
+model RemarkReaction {
+  remark    Remark   @relation("RemarkReaction", fields: [remarkId], references: [id])
+  remarkId  Int
+  user      User     @relation("Reactor", fields: [reactedBy], references: [id])
+  reactedBy Int
+  type      String
+  createdAt DateTime @default(now())
+
+  @@id([remarkId, reactedBy])
+}
+
+model Block {
+  targetUser    User     @relation("TargetUser", fields: [targetUserId], references: [id])
+  targetUserId  Int
+  blockerUser   User     @relation("BlockerUser", fields: [blockerUserId], references: [id])
+  blockerUserId Int
+  createdAt     DateTime @default(now())
+
+  @@id([targetUserId, blockerUserId])
+}

@@ -35,6 +35,7 @@ model TalkTheme {
   isPublic                   Boolean
   mode                       String
   allowRemarkAfterConclusion Boolean
+  allowRemarkEdit            Boolean
   conslusionRemark           Remark?   @relation("ConslusionRemark", fields: [conslusionRemarkId], references: [id])
   conslusionRemarkId         Int?
   concluedeAt                DateTime?

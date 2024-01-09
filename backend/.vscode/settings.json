@@ -3,5 +3,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "vetur.format.options.tabSize": 4,
-    "adobeDevUtils.jsToString.jsBeautifier.tabSize": "4"
+    "adobeDevUtils.jsToString.jsBeautifier.tabSize": "4",
+    "window.autoDetectColorScheme": false,
+    "workbench.preferredDarkColorTheme": "Solarized Dark",
+    "workbench.colorTheme": "Solarized Light"
 }

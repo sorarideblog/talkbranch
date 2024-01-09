@@ -1,5 +1,7 @@
 {
-    "cSpell.words": [
-        "nestjs"
-    ]
+    "cSpell.words": ["nestjs"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "vetur.format.options.tabSize": 4,
+    "adobeDevUtils.jsToString.jsBeautifier.tabSize": "4"
 }

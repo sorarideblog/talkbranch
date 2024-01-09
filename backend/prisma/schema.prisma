@@ -11,6 +11,7 @@ model User {
   id          Int       @id @default(autoincrement())
   uniqueName  String    @unique
   displayName String
+  imgUri      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -24,6 +25,11 @@ model User {
   TargetUser            Block[]              @relation("TargetUser")
 }
 
+enum TalkThemeMode {
+  PUBLIC
+  FACILITATED
+}
+
 model TalkTheme {
   id                         Int       @id @default(autoincrement())
   parentThemeId              Int?
@@ -33,7 +39,7 @@ model TalkTheme {
   talkThemeOwner             User      @relation("TalkThemeOwner", fields: [ownerId], references: [id])
   ownerId                    Int
   isPublic                   Boolean
-  mode                       String
+  mode                       TalkThemeMode
   allowRemarkAfterConclusion Boolean
   allowRemarkEdit            Boolean
   conslusionRemark           Remark?   @relation("ConslusionRemark", fields: [conslusionRemarkId], references: [id])
@@ -45,6 +51,19 @@ model TalkTheme {
 
   remarks    Remark[]             @relation("TalkThemeOfRemark")
   moderators TalkThemeModerator[] @relation("TalkThemeModerator")
+}
+
+enum RemarkType {
+  AGREE
+  DISAGREE
+  NEUTRAL
+  QUESTION
+  DERIVATIVE_THEME
+  SUPPLEMENT
+  SUMMARY
+  PROPOSAL
+  NEW_OPINION
+  IMPRESSION  
 }
 
 model Remark {
@@ -79,7 +98,7 @@ model RemarkBodyHistory {
   remark    Remark   @relation("RemarkBodyHistory", fields: [remarkId], references: [id])
   remarkId  Int
   version   Int
-  type      String
+  type      RemarkType
   message   String
   createdAt DateTime @default(now())
 
